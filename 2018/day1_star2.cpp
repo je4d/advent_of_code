@@ -4,28 +4,14 @@
 #include <unordered_set>
 #include <vector>
 
-int main(int argc, char** argv)
+int main()
 {
-    std::ifstream input{argc ? argv[1] : "/dev/stdin"};
-    std::vector<long> input_cache;
+    std::vector<long> freqs;
+    std::copy(std::istream_iterator<long>{std::cin}, std::istream_iterator<long>{}, std::back_inserter(freqs));
     std::unordered_set<long> sums;
     long sum{};
-    auto sum_and_test_dupe = [&](long freq) {
-        auto ret = not sums.insert(sum += freq).second;
-        if (ret)
-            std::cout << sum << std::endl;
-        return ret;
-    };
-
-    for (auto it  = std::istream_iterator<long>{input},
-              end = std::istream_iterator<long>{};
-         it != end; ++it) {
-        input_cache.push_back(*it);
-        if (sum_and_test_dupe(*it))
-            return 0;
-    }
     while (true)
-        for (auto freq : input_cache)
-            if (sum_and_test_dupe(freq))
-                return 0;
+        for (auto freq : freqs)
+            if (not sums.insert(sum += freq).second)
+                return std::cout << sum << std::endl, 0;
 }
